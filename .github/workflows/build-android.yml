@@ -1,0 +1,155 @@
+
+package com.example.azkarmuslim;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.graphics.Typeface;
+import android.graphics.Color;
+import android.view.Gravity;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.view.View;
+
+public class MainActivity extends Activity {
+
+    LinearLayout mainLayout;
+    LinearLayout contentLayout;
+
+    String[] morningAzkar = {
+        "أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.",
+        "اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور.",
+        "رضيت بالله رباً، وبالإسلام ديناً، وبمحمد ﷺ نبياً.",
+        "سبحان الله وبحمده."
+    };
+
+    int[] morningCounts = {1, 1, 3, 100};
+
+    String[] eveningAzkar = {
+        "أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.",
+        "اللهم بك أمسينا وبك أصبحنا وبك نحيا وبك نموت وإليك المصير.",
+        "رضيت بالله رباً، وبالإسلام ديناً، وبمحمد ﷺ نبياً.",
+        "سبحان الله وبحمده."
+    };
+
+    int[] eveningCounts = {1, 1, 3, 100};
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mainLayout = new LinearLayout(this);
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.setPadding(20, 25, 20, 20);
+        mainLayout.setBackgroundColor(Color.rgb(245, 248, 244));
+
+        TextView title = new TextView(this);
+        title.setText("أذكار المسلم");
+        title.setTextSize(28);
+        title.setTypeface(null, Typeface.BOLD);
+        title.setTextColor(Color.rgb(30, 90, 65));
+        title.setGravity(Gravity.CENTER);
+        mainLayout.addView(title);
+
+        Button morningButton = new Button(this);
+        morningButton.setText("أذكار الصباح");
+        mainLayout.addView(morningButton);
+
+        Button eveningButton = new Button(this);
+        eveningButton.setText("أذكار المساء");
+        mainLayout.addView(eveningButton);
+
+        ScrollView scrollView = new ScrollView(this);
+
+        contentLayout = new LinearLayout(this);
+        contentLayout.setOrientation(LinearLayout.VERTICAL);
+
+        scrollView.addView(contentLayout);
+        mainLayout.addView(scrollView);
+
+        setContentView(mainLayout);
+
+        morningButton.setOnClickListener(v ->
+            showAzkar(morningAzkar, morningCounts)
+        );
+
+        eveningButton.setOnClickListener(v ->
+            showAzkar(eveningAzkar, eveningCounts)
+        );
+
+        showAzkar(morningAzkar, morningCounts);
+    }
+
+    private void showAzkar(String[] azkar, int[] counts) {
+
+        contentLayout.removeAllViews();
+
+        for (int i = 0; i < azkar.length; i++) {
+
+            final int index = i;
+            final int total = counts[i];
+            final int[] current = {0};
+
+            LinearLayout card = new LinearLayout(this);
+            card.setOrientation(LinearLayout.VERTICAL);
+            card.setPadding(18, 20, 18, 20);
+            card.setBackgroundColor(Color.WHITE);
+
+            LinearLayout.LayoutParams cardParams =
+                new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+            cardParams.setMargins(0, 15, 0, 10);
+            card.setLayoutParams(cardParams);
+
+            TextView zekrText = new TextView(this);
+            zekrText.setText(azkar[index]);
+            zekrText.setTextSize(21);
+            zekrText.setTextColor(Color.rgb(35, 65, 50));
+            zekrText.setGravity(Gravity.CENTER);
+            zekrText.setPadding(5, 10, 5, 15);
+
+            card.addView(zekrText);
+
+            TextView counterText = new TextView(this);
+            counterText.setText("التكرار: 0 / " + total);
+            counterText.setTextSize(18);
+            counterText.setGravity(Gravity.CENTER);
+            counterText.setTextColor(Color.rgb(30, 100, 70));
+
+            card.addView(counterText);
+
+            Button countButton = new Button(this);
+            countButton.setText("تسبيح");
+            card.addView(countButton);
+
+            Button resetButton = new Button(this);
+            resetButton.setText("إعادة العداد");
+            card.addView(resetButton);
+
+            countButton.setOnClickListener(v -> {
+                if (current[0] < total) {
+                    current[0]++;
+                    counterText.setText(
+                        "التكرار: " + current[0] + " / " + total
+                    );
+                }
+
+                if (current[0] == total) {
+                    countButton.setText("اكتمل الذكر");
+                }
+            });
+
+            resetButton.setOnClickListener(v -> {
+                current[0] = 0;
+                counterText.setText("التكرار: 0 / " + total);
+                countButton.setText("تسبيح");
+            });
+
+            contentLayout.addView(card);
+        }
+    }
+}
